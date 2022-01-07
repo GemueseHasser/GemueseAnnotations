@@ -2,7 +2,7 @@
 <project version="4">
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="JAnnotations" options="-proc:none" />
+      <module name="GemueseAnnotations" options="-proc:none" />
     </option>
   </component>
 </project>
