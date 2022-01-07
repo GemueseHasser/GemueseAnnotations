@@ -10,7 +10,6 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
@@ -43,12 +42,16 @@ public final class GemueseProcessor extends AbstractProcessor {
 
                 if (alreadyUsedAnnotatedElements.contains(element)) continue;
 
-                final Name elementName = processingEnv.getElementUtils().getBinaryName((TypeElement) element);
+                final String elementClassName = ((TypeElement) element.getEnclosingElement())
+                    .getQualifiedName()
+                    .toString();
 
                 for (@NotNull final Element innerElement : annotatedElements) {
-                    final Name innerElementName = processingEnv.getElementUtils().getBinaryName((TypeElement) innerElement);
+                    final String innerElementClassName = ((TypeElement) innerElement.getEnclosingElement())
+                        .getQualifiedName()
+                        .toString();
 
-                    if (!elementName.equals(innerElementName)) continue;
+                    if (!elementClassName.equals(innerElementClassName)) continue;
 
                     if (alreadyUsedAnnotatedElements.contains(innerElement)) continue;
 
@@ -59,7 +62,7 @@ public final class GemueseProcessor extends AbstractProcessor {
                 processForClass(annotation, specifiedAnnotatedElements);
                 processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.NOTE,
-                    "Klasse: " + processingEnv.getElementUtils().getBinaryName((TypeElement) element) + " | Ann: " + specifiedAnnotatedElements
+                    "Klasse: " + elementClassName + " | Ann: " + specifiedAnnotatedElements
                 );
             }
         }
