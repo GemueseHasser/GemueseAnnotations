@@ -11,14 +11,35 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.NavigableMap;
 
+/**
+ * Mithilfe des {@link JavaGenerator} lässt sich eine Java-Datei einfach und sauber erzeugen. Man kann ausschließlich
+ * eine neue Datei erzeugen und keine bestehende Datei bearbeiten.
+ */
 @NotNull
 public final class JavaGenerator {
 
+    //<editor-fold desc="LOCAL FIELDS">
+    /** Der Name der Klasse, die neu erstellt werden soll. */
     @NotNull
     private final String newClassName;
+    /** Der {@link PrintWriter}, mit dem die gesamte Java-Datei geschrieben wird. */
     private PrintWriter writer;
+    //</editor-fold>
 
 
+    //<editor-fold desc="CONSTRUCTORS">
+
+    /**
+     * Erzeugt eine neue und vollständig unabhängige Instanz eines {@link JavaGenerator}. Mithilfe des {@link
+     * JavaGenerator} lässt sich eine Java-Datei einfach und sauber erzeugen. Man kann ausschließlich eine neue Datei
+     * erzeugen und keine bestehende Datei bearbeiten. Beim Erzeugen des Konstruktors wird der grundlegende Aufbau der
+     * Java-Datei schonmal niedergeschrieben. Es wird nur die Schlussklammer ('}') noch nicht gesetzt. Diese wird durch
+     * die Methode {@code finish} gesetzt.
+     *
+     * @param className     Der Name der aktuellen Klasse.
+     * @param newClassName  Der Name, den die neue Klasse erhalten soll.
+     * @param processingEnv Die {@link ProcessingEnvironment}, die vom Prozessor übergeben wird.
+     */
     public JavaGenerator(
         @NotNull final String className,
         @NotNull final String newClassName,
@@ -56,8 +77,17 @@ public final class JavaGenerator {
         this.writer.print(" {");
         this.writer.println();
     }
+    //</editor-fold>
 
 
+    /**
+     * Fügt der zu generierenden Klasse ein Feld hinzu.
+     *
+     * @param modifier     Der Zugriffsmodifikator des Feldes (Bsp: 'private final').
+     * @param type         Der Typ, den das Feld haben soll (Bsp: String).
+     * @param name         Der Name des Feldes.
+     * @param initializing Die Initialisierung des Feldes (null, wenn das Feld nicht initialisiert werden soll).
+     */
     public void addField(
         @NotNull final String modifier,
         @NotNull final String type,
@@ -69,12 +99,20 @@ public final class JavaGenerator {
         this.writer.print(" " + type);
         this.writer.print(" " + name);
 
-        if (initializing == null) return;
+        if (initializing != null) {
+            this.writer.print(" = ");
+            this.writer.print(initializing);
+        }
 
-        this.writer.print(" = ");
-        this.writer.print(initializing + ";");
+        this.writer.print(";");
     }
 
+    /**
+     * Fügt der zu generierenden Klasse einen Konstruktor hinzu.
+     *
+     * @param parameters Die Parameter, die der Konstruktor bekommen soll.
+     * @param body       Der Inhalt, der im Konstruktor stehen soll (ein Eintrag stellt eine Zeile dar).
+     */
     public void addConstructor(
         @NotNull final NavigableMap<String, String> parameters,
         @NotNull final String[] body
@@ -95,6 +133,14 @@ public final class JavaGenerator {
         this.writer.println("    }");
     }
 
+    /**
+     * Fügt der zu generierenden Klasse eine Methode hinzu.
+     *
+     * @param name       Der Name der Methode.
+     * @param returnType Der Return-Type der Methode.
+     * @param parameters Die Parameter, die die Methode bekommen soll.
+     * @param body       Der Inhalt, der in dieser Methode stehen soll (ein Eintrag stellt eine Zeile dar).
+     */
     public void addMethod(
         @NotNull final String name,
         @Nullable final String returnType,
@@ -121,16 +167,32 @@ public final class JavaGenerator {
         this.writer.println("    }");
     }
 
+    /**
+     * Beendet die Bearbeitung dieses Generators und setzt die Schlussklammer ('}') der Klasse. Nachdem diese Methode
+     * aufgerufen wurde, kann keine weitere Änderung mithilfe dieses Generators mehr vorgenommen werden, da der {@link
+     * PrintWriter} geschlossen wird.
+     */
     public void finish() {
         this.writer.println("}");
         this.writer.close();
     }
 
+    /**
+     * Gibt den Namen der Klasse zurück, die neu erzeugt werden soll.
+     *
+     * @return Der Name der Klasse, die neu erzeugtb werden soll.
+     */
     @NotNull
     public String getNewClassName() {
         return this.newClassName;
     }
 
+    /**
+     * Fügt an der Stelle, an der sich der {@link PrintWriter} momentan befindet Parameter, welche durch Klammern
+     * eingeschlossen sind hinzu.
+     *
+     * @param parameters Die Parameter, die niedergeschrieben werden sollen.
+     */
     private void writeParameters(@NotNull NavigableMap<String, String> parameters) {
         this.writer.print("(");
 
@@ -151,6 +213,12 @@ public final class JavaGenerator {
         this.writer.print(")");
     }
 
+    /**
+     * Erzeugt an der Stelle, an der sich der {@link PrintWriter} momentan befindet Code, welcher in einem Array
+     * abgespeichert ist, wo ein Eintrag eine Zeile darstellt.
+     *
+     * @param body Der Inhalt, welcher niedergeschrieben werden soll.
+     */
     private void printBody(@NotNull final String[] body) {
         for (@NotNull final String line : body) {
             this.writer.println("        " + line);

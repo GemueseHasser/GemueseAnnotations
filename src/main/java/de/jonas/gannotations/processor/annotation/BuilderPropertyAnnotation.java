@@ -20,9 +20,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+/**
+ * Es wird ein Handler für die {@link BuilderProperty} erzeugt, welcher nun aus allen Settern, die diese Annotation
+ * besitzen einen Builder erzeugt.
+ */
 @NotNull
 public final class BuilderPropertyAnnotation implements AnnotationHandler {
 
+    //<editor-fold desc="implementation">
     @Override
     public void processAnnotation(
         @NotNull final Set<? extends Element> annotatedElements,
@@ -59,6 +64,20 @@ public final class BuilderPropertyAnnotation implements AnnotationHandler {
         generateJavaCode(className, processingEnvironment, setterMap);
     }
 
+    @NotNull
+    @Override
+    public Class<? extends Annotation> getAnnotytionType() {
+        return BuilderProperty.class;
+    }
+    //</editor-fold>
+
+    /**
+     * Generiert die Java-Datei des Builders.
+     *
+     * @param className             Der Name der Klasse, in der sich die Annotations befinden.
+     * @param processingEnvironment Die {@link ProcessingEnvironment}, welche vom Prozessor übergeben wird.
+     * @param setterMap             Alle Setter, welche für den Builder genutzt werden sollen.
+     */
     public void generateJavaCode(
         @NotNull final String className,
         @NotNull final ProcessingEnvironment processingEnvironment,
@@ -81,7 +100,7 @@ public final class BuilderPropertyAnnotation implements AnnotationHandler {
             "build",
             className,
             Collections.emptyNavigableMap(),
-            new String[] {
+            new String[]{
                 "return object;"
             }
         );
@@ -94,7 +113,7 @@ public final class BuilderPropertyAnnotation implements AnnotationHandler {
                 methodName,
                 generator.getNewClassName(),
                 parameters,
-                new String[] {
+                new String[]{
                     "object." + methodName + "(value);",
                     "return this;"
                 }
@@ -102,11 +121,5 @@ public final class BuilderPropertyAnnotation implements AnnotationHandler {
         });
 
         generator.finish();
-    }
-
-    @NotNull
-    @Override
-    public Class<? extends Annotation> getAnnotytionType() {
-        return BuilderProperty.class;
     }
 }
