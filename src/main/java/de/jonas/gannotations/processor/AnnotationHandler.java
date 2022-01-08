@@ -1,5 +1,7 @@
 package de.jonas.gannotations.processor;
 
+import com.sun.source.util.Trees;
+import com.sun.tools.javac.tree.TreeMaker;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -29,7 +31,9 @@ public interface AnnotationHandler {
      */
     void processAnnotation(
         @NotNull final Set<? extends Element> annotatedElements,
-        @NotNull final ProcessingEnvironment processingEnvironment
+        @NotNull final ProcessingEnvironment processingEnvironment,
+        @NotNull final Trees trees,
+        @NotNull final TreeMaker treeMaker
     );
 
     /**

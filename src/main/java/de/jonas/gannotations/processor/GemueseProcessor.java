@@ -1,9 +1,13 @@
 package de.jonas.gannotations.processor;
 
+import com.sun.source.util.Trees;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.tree.TreeMaker;
 import de.jonas.gannotations.processor.annotation.BuilderPropertyAnnotation;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -38,11 +42,24 @@ public final class GemueseProcessor extends AbstractProcessor {
     //</editor-fold>
 
 
+    private Trees trees;
+    private TreeMaker treeMaker;
+
     //<editor-fold desc="implementation">
     @Override
+    public synchronized void init(@NotNull final ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+
+        final JavacProcessingEnvironment javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
+
+        this.trees = Trees.instance(processingEnv);
+        this.treeMaker = TreeMaker.instance(javacProcessingEnvironment.getContext());
+    }
+
+    @Override
     public boolean process(
-        final Set<? extends TypeElement> annotations,
-        final RoundEnvironment roundEnvironment
+        @NotNull final Set<? extends TypeElement> annotations,
+        @NotNull final RoundEnvironment roundEnvironment
     ) {
         // iterate over all supported annotations by this processor
         for (@NotNull final TypeElement annotation : annotations) {
@@ -107,7 +124,7 @@ public final class GemueseProcessor extends AbstractProcessor {
             }
 
             // execute the process for the current annotations in one class
-            annotationHandler.processAnnotation(annotatedElements, processingEnv);
+            annotationHandler.processAnnotation(annotatedElements, processingEnv, this.trees, this.treeMaker);
         }
     }
 

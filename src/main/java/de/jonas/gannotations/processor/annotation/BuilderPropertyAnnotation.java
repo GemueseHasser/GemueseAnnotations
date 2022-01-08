@@ -1,5 +1,7 @@
 package de.jonas.gannotations.processor.annotation;
 
+import com.sun.source.util.Trees;
+import com.sun.tools.javac.tree.TreeMaker;
 import de.jonas.gannotations.annotation.BuilderProperty;
 import de.jonas.gannotations.processor.AnnotationHandler;
 import de.jonas.gannotations.processor.JavaGenerator;
@@ -31,7 +33,9 @@ public final class BuilderPropertyAnnotation implements AnnotationHandler {
     @Override
     public void processAnnotation(
         @NotNull final Set<? extends Element> annotatedElements,
-        @NotNull final ProcessingEnvironment processingEnvironment
+        @NotNull final ProcessingEnvironment processingEnvironment,
+        @NotNull final Trees trees,
+        @NotNull final TreeMaker treeMaker
     ) {
         final Map<Boolean, List<Element>> annotatedMethods = annotatedElements.stream().collect(
             Collectors.partitioningBy(element -> ((ExecutableType) element.asType()).getParameterTypes().size() == 1
