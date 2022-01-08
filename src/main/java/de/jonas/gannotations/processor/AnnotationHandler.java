@@ -28,6 +28,8 @@ public interface AnnotationHandler {
      * @param annotatedElements     Alle Elemente in einer Klasse, die diese Annotation angemerkt haben.
      * @param processingEnvironment Die {@link ProcessingEnvironment}, die von dem Annotation-Prozessor übergeben wird
      *                              und die auch weiterhin bei der Implementierung genutzt werden kann.
+     * @param trees                 Die AST trees, welche vom Prozessor übergeben werden.
+     * @param treeMaker             Der Tree-Maker, mit dem ein Tree editiert werden kann.
      */
     void processAnnotation(
         @NotNull final Set<? extends Element> annotatedElements,

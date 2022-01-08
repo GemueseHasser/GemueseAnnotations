@@ -42,8 +42,12 @@ public final class GemueseProcessor extends AbstractProcessor {
     //</editor-fold>
 
 
+    //<editor-fold desc="LOCAL FIELDS">
+    /** Die AST trees. */
     private Trees trees;
+    /** Der Tree-Maker um einen Tree zu editieren. */
     private TreeMaker treeMaker;
+    //</editor-fold>
 
     //<editor-fold desc="implementation">
     @Override
